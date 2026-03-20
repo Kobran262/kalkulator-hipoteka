@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kalkulator stambenih kredita — Srbija</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--blue:#1B3F7A;--blue-light:#2A5CB8;--blue-pale:#EBF1FB;--green:#1A6645;--green-pale:#E6F4ED;--amber:#B05C10;--amber-pale:#FDF0E6;--gray-50:#F7F6F3;--gray-100:#EDECEA;--gray-200:#D8D7D3;--gray-400:#9B9A96;--gray-600:#5C5B57;--gray-900:#1C1C1A;--radius:10px;--radius-lg:16px}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'DM Sans',sans-serif;background:var(--gray-50);color:var(--gray-900);font-size:15px;line-height:1.6;min-height:100vh}
+  .lang-bar{background:var(--blue);border-bottom:1px solid rgba(255,255,255,.1);padding:8px 0}
+  .lang-bar-inner{max-width:860px;margin:0 auto;padding:0 1.5rem;display:flex;justify-content:flex-end}
+  .lang-switch{display:flex;background:rgba(255,255,255,.1);border-radius:20px;padding:2px;gap:2px}
+  .lang-btn{padding:4px 14px;border:none;border-radius:16px;font-size:12px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;background:transparent;color:rgba(255,255,255,.6);transition:all .15s}
+  .lang-btn.active{background:#fff;color:var(--blue)}
+  header{background:var(--blue);padding:2rem 0 3.5rem;position:relative;overflow:hidden}
+  header::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:32px;background:var(--gray-50);border-radius:32px 32px 0 0}
+  header::before{content:'';position:absolute;top:-80px;right:-80px;width:320px;height:320px;border-radius:50%;background:rgba(255,255,255,.04)}
+  .header-inner{max-width:860px;margin:0 auto;padding:0 1.5rem;position:relative;z-index:1}
+  .header-tag{display:inline-block;background:rgba(255,255,255,.12);color:rgba(255,255,255,.8);font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:.75rem}
+  header h1{font-family:'DM Serif Display',serif;font-size:clamp(1.6rem,4vw,2.4rem);color:#fff;font-weight:400;line-height:1.2;margin-bottom:.5rem}
+  header p{color:rgba(255,255,255,.65);font-size:14px;font-weight:300}
+  .container{max-width:860px;margin:0 auto;padding:1.5rem 1.5rem 4rem}
+  .card{background:#fff;border:1px solid var(--gray-100);border-radius:var(--radius-lg);padding:1.5rem;margin-bottom:1rem}
+  .card-title{font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-400);margin-bottom:1.25rem}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
+  .field{display:flex;flex-direction:column;gap:6px}
+  .field label{font-size:13px;color:var(--gray-600)}
+  .range-wrap{display:flex;align-items:center;gap:10px}
+  .range-wrap input[type=range]{flex:1;-webkit-appearance:none;height:4px;border-radius:4px;background:var(--gray-100);outline:none;cursor:pointer}
+  .range-wrap input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--blue);border:2px solid #fff;box-shadow:0 0 0 1px var(--blue);cursor:pointer}
+  .range-val{font-size:14px;font-weight:500;min-width:90px;text-align:right;color:var(--gray-900)}
+  .down-info{font-size:12px;color:var(--gray-400);margin-top:5px;line-height:1.5}
+  .tabs{display:flex;gap:6px;flex-wrap:wrap}
+  .tab{padding:6px 14px;font-size:13px;border:1px solid var(--gray-200);border-radius:20px;cursor:pointer;background:#fff;color:var(--gray-600);transition:all .15s;font-family:'DM Sans',sans-serif}
+  .tab:hover{border-color:var(--blue-light);color:var(--blue-light)}
+  .tab.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+  .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--gray-100);gap:1rem}
+  .toggle-row:last-child{border-bottom:none}
+  .toggle-info{flex:1}
+  .toggle-label{font-size:14px;color:var(--gray-900)}
+  .toggle-sub{font-size:12px;color:var(--gray-400);margin-top:2px}
+  .toggle-btn{width:40px;height:22px;border-radius:11px;background:var(--gray-200);position:relative;cursor:pointer;flex-shrink:0;transition:background .2s;border:none}
+  .toggle-btn.on{background:var(--blue)}
+  .toggle-btn::after{content:'';position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;top:2px;left:2px;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+  .toggle-btn.on::after{left:20px}
+  .radio-opt{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border:1px solid var(--gray-100);border-radius:var(--radius);cursor:pointer;transition:border-color .15s,background .15s}
+  .radio-opt:hover{border-color:var(--gray-200);background:var(--gray-50)}
+  .radio-opt:has(input:checked){border-color:#9AB8E0;background:#F5F8FD}
+  .radio-opt input[type=radio]{margin-top:3px;accent-color:var(--blue);flex-shrink:0}
+  .radio-title{font-size:14px;color:var(--gray-900);font-weight:500}
+  .radio-sub{font-size:12px;color:var(--gray-400);margin-top:2px;line-height:1.4}
+  .alert{border-radius:var(--radius);padding:12px 16px;font-size:13px;margin-bottom:1rem;display:none;line-height:1.5}
+  .alert strong{font-weight:500;display:block;margin-bottom:3px}
+  .alert.green{background:var(--green-pale);color:var(--green);border:1px solid #A8D8C0}
+  .alert.amber{background:var(--amber-pale);color:var(--amber);border:1px solid #F0C090}
+  .info-btn{display:inline-flex;align-items:center;gap:5px;margin-top:8px;padding:5px 12px;font-size:12px;font-weight:500;font-family:'DM Sans',sans-serif;border:1px solid currentColor;border-radius:20px;cursor:pointer;background:transparent;transition:opacity .15s}
+  .info-btn:hover{opacity:.7}
+  .alert.green .info-btn{color:var(--green)}
+  .alert.amber .info-btn{color:var(--amber)}
+  .summary-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:1.25rem}
+  .metric{background:var(--gray-50);border-radius:var(--radius);padding:1rem;text-align:center}
+  .metric-label{font-size:11px;color:var(--gray-400);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+  .metric-val{font-size:22px;font-weight:500;color:var(--gray-900);font-family:'DM Serif Display',serif}
+  .results-header{display:grid;grid-template-columns:2.2fr 1fr 1fr 1.3fr .7fr;gap:8px;font-size:11px;font-weight:500;color:var(--gray-400);padding:8px 14px;text-transform:uppercase;letter-spacing:.06em}
+  .bank-row{display:grid;grid-template-columns:2.2fr 1fr 1fr 1.3fr .7fr;gap:8px;align-items:center;padding:11px 14px;border-radius:var(--radius);margin-bottom:5px;background:#fff;border:1px solid var(--gray-100);transition:border-color .15s}
+  .bank-row:hover{border-color:var(--gray-200)}
+  .bank-row.best{border-color:var(--blue-light);background:#FAFCFF}
+  .bank-row.youth-ok{border-color:#7DC4A4;background:#FAFEFB}
+  .bank-name{font-size:13px;font-weight:500;color:var(--gray-900)}
+  .bank-badges{display:flex;gap:4px;margin-top:3px;flex-wrap:wrap}
+  .badge{display:inline-block;font-size:10px;padding:2px 7px;border-radius:10px;font-weight:500}
+  .badge-blue{background:var(--blue-pale);color:var(--blue)}
+  .badge-green{background:var(--green-pale);color:var(--green)}
+  .badge-amber{background:var(--amber-pale);color:var(--amber)}
+  .bank-rate{font-size:14px;font-weight:500;color:var(--gray-900)}
+  .bank-rate .eks{font-size:11px;color:var(--gray-400);display:block;margin-top:1px}
+  .bank-rate.low{color:var(--blue)}
+  .bank-monthly{font-size:15px;font-weight:500}
+  .bank-total{font-size:13px;color:var(--gray-600)}
+  .bank-total .interest{font-size:11px;color:var(--gray-400);display:block;margin-top:1px}
+  .bank-link a{font-size:12px;color:var(--blue-light);text-decoration:none;font-weight:500}
+  .bank-link a:hover{text-decoration:underline}
+  .footnote{font-size:11px;color:var(--gray-400);line-height:1.6;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--gray-100)}
+  .empty-state{padding:2rem;text-align:center;font-size:14px;color:var(--gray-400)}
+  .modal-overlay{display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.45);align-items:center;justify-content:center;padding:1rem}
+  .modal-overlay.open{display:flex}
+  .modal-box{background:#fff;border-radius:var(--radius-lg);padding:1.5rem;max-width:520px;width:100%;max-height:85vh;overflow-y:auto;position:relative}
+  .modal-title{font-size:16px;font-weight:500;color:var(--gray-900);margin-bottom:1rem;padding-right:2rem}
+  .modal-close{position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:20px;cursor:pointer;color:var(--gray-400);line-height:1;padding:4px}
+  .modal-close:hover{color:var(--gray-900)}
+  .modal-section{margin-bottom:1rem}
+  .modal-section-title{font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-400);margin-bottom:6px}
+  .modal-list{list-style:none;padding:0}
+  .modal-list li{font-size:13px;color:var(--gray-600);padding:5px 0 5px 16px;position:relative;line-height:1.5;border-bottom:1px solid var(--gray-100)}
+  .modal-list li:last-child{border-bottom:none}
+  .modal-list li::before{content:'—';position:absolute;left:0;color:var(--gray-200)}
+  .modal-note{font-size:11px;color:var(--gray-400);margin-top:1rem;padding-top:.75rem;border-top:1px solid var(--gray-100);line-height:1.6;font-style:italic}
+  footer{text-align:center;padding:2rem;font-size:12px;color:var(--gray-400);border-top:1px solid var(--gray-100);background:#fff}
+  @media(max-width:640px){.grid2{grid-template-columns:1fr}.results-header{display:none}.bank-row{grid-template-columns:1fr 1fr}.bank-total,.bank-link{display:none}.summary-row{grid-template-columns:1fr 1fr}.summary-row .metric:last-child{grid-column:1/-1}}
+</style>
+</head>
+<body>
+
+<div class="lang-bar">
+  <div class="lang-bar-inner">
+    <div class="lang-switch">
+      <button class="lang-btn active" onclick="setLang('sr')">SR</button>
+      <button class="lang-btn" onclick="setLang('ru')">RU</button>
+    </div>
+  </div>
+</div>
+
+<header>
+  <div class="header-inner">
+    <span class="header-tag">Srbija · 2026</span>
+    <h1 id="h-title">Kalkulator stambenih kredita</h1>
+    <p id="h-sub">Poređenje 16 banaka · Subvencija za mlade · Rezidenti i nerezidenti</p>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="card">
+    <div class="card-title" data-i18n="params_title">Parametri kredita</div>
+    <div class="grid2" style="margin-bottom:1.25rem">
+      <div class="field">
+        <label data-i18n="prop_value_label">Vrednost nekretnine</label>
+        <div class="range-wrap">
+          <input type="range" id="prop-value" min="20000" max="500000" step="1000" value="100000">
+          <span class="range-val" id="prop-value-out">100.000 &#8364;</span>
+        </div>
+      </div>
+      <div class="field">
+        <label data-i18n="down_label">Učešće</label>
+        <div class="range-wrap">
+          <input type="range" id="down-range" min="1" max="70" step="1" value="20">
+          <span class="range-val" id="down-pct-out">20%</span>
+        </div>
+        <div class="tabs" id="down-tabs" style="margin-top:8px">
+          <button class="tab" data-val="1">1%</button>
+          <button class="tab" data-val="10">10%</button>
+          <button class="tab active" data-val="20">20%</button>
+          <button class="tab" data-val="30">30%</button>
+          <button class="tab" data-val="40">40%</button>
+          <button class="tab" data-val="50">50%</button>
+        </div>
+        <div class="down-info" id="down-info">Učešće: 20.000 € · Kredit: 80.000 €</div>
+      </div>
+    </div>
+    <div class="grid2" style="margin-bottom:1.25rem">
+      <div class="field">
+        <label data-i18n="repayment_term">Rok otplate</label>
+        <div class="tabs" id="term-tabs">
+          <button class="tab" data-val="10">10 <span data-i18n="years_short">god</span></button>
+          <button class="tab" data-val="15">15 <span data-i18n="years_short">god</span></button>
+          <button class="tab active" data-val="20">20 <span data-i18n="years_short">god</span></button>
+          <button class="tab" data-val="25">25 <span data-i18n="years_short">god</span></button>
+          <button class="tab" data-val="30">30 <span data-i18n="years_short">god</span></button>
+          <button class="tab" data-val="40">40 <span data-i18n="years_short">god</span></button>
+        </div>
+      </div>
+      <div class="field">
+        <label data-i18n="currency_label">Valuta kredita</label>
+        <div class="tabs" id="currency-tabs">
+          <button class="tab active" data-val="EUR" data-i18n="cur_eur">Indeksirani u EUR</button>
+          <button class="tab" data-val="RSD" data-i18n="cur_rsd">U dinarima (RSD)</button>
+        </div>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="field">
+        <label data-i18n="rate_type_label">Tip kamate</label>
+        <div class="tabs" id="rate-tabs">
+          <button class="tab active" data-val="variable" data-i18n="rate_var">Promenljiva</button>
+          <button class="tab" data-val="fixed" data-i18n="rate_fixed">Fiksna</button>
+          <button class="tab" data-val="combined" data-i18n="rate_comb">Kombinovana</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title" data-i18n="profile_title">Profil podnosioca</div>
+    <div style="margin-bottom:1.25rem">
+      <div style="font-size:13px;color:var(--gray-600);margin-bottom:10px" data-i18n="residency_label">Status boravka</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <label class="radio-opt"><input type="radio" name="status" value="resident_citizen" checked>
+          <div class="radio-body"><div class="radio-title" data-i18n="s_res_cit_title">Rezident — državljanin Srbije</div><div class="radio-sub" data-i18n="s_res_cit_sub">Stalno boravištem u Srbiji, srpski pasoš</div></div></label>
+        <label class="radio-opt"><input type="radio" name="status" value="resident_foreigner">
+          <div class="radio-body"><div class="radio-title" data-i18n="s_res_for_title">Rezident — strani državljanin (privremeni ili stalni boravak)</div><div class="radio-sub" data-i18n="s_res_for_sub">Boravišna dozvola · prihodi u Srbiji · isti uslovi kao domaći</div></div></label>
+        <label class="radio-opt"><input type="radio" name="status" value="diaspora">
+          <div class="radio-body"><div class="radio-title" data-i18n="s_dia_title">Nerezident — dijaspora (srpski državljanin u inostranstvu)</div><div class="radio-sub" data-i18n="s_dia_sub">Živi i radi van Srbije duže od 12 meseci · ograničen broj banaka</div></div></label>
+        <label class="radio-opt"><input type="radio" name="status" value="foreigner_nonres">
+          <div class="radio-body"><div class="radio-title" data-i18n="s_for_title">Nerezident — strani državljanin bez boravišta u Srbiji</div><div class="radio-sub" data-i18n="s_for_sub">Samo API banka · prihodi van Srbije · posebni uslovi</div></div></label>
+      </div>
+    </div>
+    <div style="border-top:1px solid var(--gray-100);padding-top:1rem">
+      <div style="font-size:13px;color:var(--gray-600);margin-bottom:10px" data-i18n="other_label">Ostalo</div>
+      <div class="toggle-row" id="row-youth">
+        <div class="toggle-info">
+          <div class="toggle-label" data-i18n="youth_label">Mladi 20–35 god. — državna subvencija</div>
+          <div class="toggle-sub" data-i18n="youth_sub">Prva nekretnina · učešće od 1% · kamata 1,5% prvih 6 god · samo srpski rezidenti</div>
+        </div>
+        <button class="toggle-btn" id="tog-youth" onclick="tog(this,'youth')"></button>
+      </div>
+      <div class="toggle-row">
+        <div class="toggle-info">
+          <div class="toggle-label" data-i18n="prev_label">Imam prethodni stambeni kredit</div>
+          <div class="toggle-sub" data-i18n="prev_sub">Isključuje državnu subvenciju za mlade</div>
+        </div>
+        <button class="toggle-btn" id="tog-prev" onclick="tog(this,'prev')"></button>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-bottom:1rem">
+    <button id="calc-btn" onclick="render()" style="background:var(--blue);color:#fff;border:none;border-radius:var(--radius-lg);padding:14px 48px;font-size:16px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;letter-spacing:.01em;transition:background .15s" data-i18n="calc_btn">Izračunaj</button>
+  </div>
+
+  <div class="alert green" id="alert-youth">
+    <strong data-i18n="ay_title">Državna subvencija za mlade aktivna (2026)</strong>
+    <span data-i18n="ay_body">Prvih 72 meseca 3,5% (klijent 1,5% + država 2 p.p.). Nakon 6. god: 6M EURIBOR+2%. Maks. kredit 100.000 €, maks. vrednost nekretnine 150.000 €.</span>
+    <br><button class="info-btn" onclick="openModal('modal-youth')" data-i18n="info_btn_youth">Informacije — svi uslovi</button>
+  </div>
+  <div class="alert amber" id="alert-res-foreigner" style="display:none">
+    <strong data-i18n="arf_title">Strani državljanin sa boravišnom dozvolom — uslovi kao domaći</strong>
+    <span data-i18n="arf_body">Rezidenti-stranci kreditiraju se pod istim uslovima. Dostupne sve banke.</span>
+    <br><button class="info-btn" onclick="openModal('modal-res-foreigner')" data-i18n="info_btn_resfgn">Informacije — dokumentacija</button>
+  </div>
+  <div class="alert amber" id="alert-diaspora" style="display:none">
+    <strong data-i18n="ad_title">Dijaspora — kredit kao kreditni posao sa inostranstvom</strong>
+    <span data-i18n="ad_body">Ograničen broj banaka, povišena kamatna stopa, učešće min. 30%.</span>
+    <br><button class="info-btn" onclick="openModal('modal-diaspora')" data-i18n="info_btn_dia">Informacije — svi uslovi</button>
+  </div>
+  <div class="alert amber" id="alert-foreigner-nonres" style="display:none">
+    <strong data-i18n="afn_title">Strani državljanin bez boravišta — izuzetno ograničene opcije</strong>
+    <span data-i18n="afn_body">Strani državljani bez boravišne dozvole. API banka ima poseban program.</span>
+    <br><button class="info-btn" onclick="openModal('modal-foreigner-nonres')" data-i18n="info_btn_fgn">Informacije — uslovi API banke</button>
+  </div>
+  <div class="alert amber" id="alert-down-warn" style="display:none">
+    <strong data-i18n="down_warn_title">Učešće je ispod minimalnog za odabrani profil</strong>
+    <span id="down-warn-text"></span>
+  </div>
+
+  <div class="card">
+    <div class="card-title" data-i18n="results_title">Poređenje banaka</div>
+    <div class="summary-row">
+      <div class="metric"><div class="metric-label" data-i18n="m_lowest">Najniža mesečna rata</div><div class="metric-val" id="best-m">—</div></div>
+      <div class="metric"><div class="metric-label" data-i18n="m_saving">Ušteda vs najskuplje</div><div class="metric-val" id="saving-m">—</div></div>
+      <div class="metric"><div class="metric-label" data-i18n="m_diff">Ukupna razlika</div><div class="metric-val" id="total-diff">—</div></div>
+    </div>
+    <div class="results-header">
+      <span data-i18n="col_bank">Banka</span><span data-i18n="col_rate">Kamata / EKS</span>
+      <span data-i18n="col_monthly">Mes. rata</span><span data-i18n="col_total">Ukupna otplata</span><span></span>
+    </div>
+    <div id="banks-list"></div>
+    <div class="footnote" id="footnote"></div>
+  </div>
+
+</div>
+
+<footer id="footer-text">Podaci su indikativni, ažurirani mart 2026. NBS ograničenje kamatnih stopa važi do 31.05.2026. Uvek proverite aktuelne uslove direktno sa bankom. · © 2026</footer>
+
+<!-- MODALI -->
+<div class="modal-overlay" id="modal-youth">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modal-youth')">&#x2715;</button>
+    <div class="modal-title" data-i18n="my_title">Subvencija za mlade — uslovi (2026)</div>
+    <div class="modal-section"><div class="modal-section-title" data-i18n="my_s1">Uslovi za podnosioca</div><ul class="modal-list" id="my-list-1"></ul></div>
+    <div class="modal-section"><div class="modal-section-title" data-i18n="my_s2">Uslovi kredita</div><ul class="modal-list" id="my-list-2"></ul></div>
+    <div class="modal-section"><div class="modal-section-title" data-i18n="my_s3">Uslovi za nekretninu</div><ul class="modal-list" id="my-list-3"></ul></div>
+    <div class="modal-note" data-i18n="my_note">* Ovo su zakonski propisani uslovi. Svaka banka može imati dodatne interne zahteve. Uslovi su informativnog karaktera.</div>
+  </div>
+</div>
+<div class="modal-overlay" id="modal-res-foreigner">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modal-res-foreigner')">&#x2715;</button>
+    <div class="modal-title" data-i18n="mrf_title">Strani rezident — dokumentacija</div>
+    <div class="modal-section"><div class="modal-section-title" data-i18n="mrf_s1">Ko spada u ovu kategoriju</div><ul class="modal-list" id="mrf-list-1"></ul></div>
+    <div class="modal-section"><div class="modal-section-title" data-i18n="mrf_s2">Uslovi kredita</div><ul class="modal-list" id="mrf-list-2"></ul></div>
+    <div class="modal-section"><div class="modal-section-title" data-i18n="mrf_s3">Standardna dokumentacija</div><ul class="modal-list" id="mrf-list-3"></ul></div>
+    <div class="modal-note" data-i18n="mrf_note">* Banke imaju pravo da postave dodatne uslove. Proverite konkretne uslove direktno u ekspozituri.</div>
+  </div>
+</div>
+<div class="modal-overlay" id="modal-diaspora">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modal-diaspora')">&#x2715;</button>
+    <div class="modal-title" data-i18n="md_title">Dijaspora — uslovi stambenog kredita</div>
+    <div class="modal-section"><div class="modal-section-title" data-i18n="md_s1">Ko spada u ovu kategoriju</div><ul class="modal-list" id="md-list-1"></ul></div>
+    <div class="modal-section"><div class="modal-section-title" data-i18n="md_s2">Uslovi kredita</div><ul class="modal-list" id="md-list-2"></ul></div>
+    <div class="modal-section"><div class="modal-section-title" data-i18n="md_s3">Standardna dokumentacija</div><ul class="modal-list" id="md-list-3"></ul></div>
+    <div class="modal-note" data-i18n="md_note">* Svaka banka procenjuje kreditnu sposobnost individualno. Prevod i overa stranih dokumenata su obavezni.</div>
+  </div>
+</div>
+<div class="modal-overlay" id="modal-foreigner-nonres">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modal-foreigner-nonres')">&#x2715;</button>
+    <div class="modal-title" data-i18n="mfn_title">Strani državljanin bez boravišta</div>
+    <div class="modal-section"><div class="modal-section-title" data-i18n="mfn_s1">Opšta situacija</div><ul class="modal-list" id="mfn-list-1"></ul></div>
+    <div class="modal-section"><div class="modal-section-title" data-i18n="mfn_s2">Uslovi (API banka)</div><ul class="modal-list" id="mfn-list-2"></ul></div>
+    <div class="modal-section"><div class="modal-section-title" data-i18n="mfn_s3">Dokumentacija</div><ul class="modal-list" id="mfn-list-3"></ul></div>
+    <div class="modal-note" data-i18n="mfn_note">* Ovo su indikativni uslovi. Banke zadržavaju pravo odbijanja zahteva.</div>
+  </div>
+</div>
+
+<script>
+const T = {
+  sr: {
+    h_title:'Kalkulator stambenih kredita',h_sub:'Poređenje 16 banaka · Subvencija za mlade · Rezidenti i nerezidenti',
+    params_title:'Parametri kredita',prop_value_label:'Vrednost nekretnine',down_label:'Učešće',
+    loan_amount:'Iznos kredita',repayment_term:'Rok otplate',years_short:'god',
+    currency_label:'Valuta kredita',cur_eur:'Indeksirani u EUR',cur_rsd:'U dinarima (RSD)',
+    rate_type_label:'Tip kamate',rate_var:'Promenljiva',rate_fixed:'Fiksna',rate_comb:'Kombinovana',
+    profile_title:'Profil podnosioca',residency_label:'Status boravka',
+    s_res_cit_title:'Rezident — državljanin Srbije',s_res_cit_sub:'Stalno boravištem u Srbiji, srpski pašoš',
+    s_res_for_title:'Rezident — strani državljanin (privremeni ili stalni boravak)',s_res_for_sub:'Boravišna dozvola · prihodi u Srbiji · isti uslovi kao domaći',
+    s_dia_title:'Nerezident — dijaspora (srpski državljanin u inostranstvu)',s_dia_sub:'Živi i radi van Srbije duže od 12 meseci · ograničen broj banaka',
+    s_for_title:'Nerezident — strani državljanin bez boravišta u Srbiji',s_for_sub:'Samo API banka · prihodi van Srbije · posebni uslovi',
+    other_label:'Ostalo',
+    youth_label:'Mladi 20–35 god. — državna subvencija',youth_sub:'Prva nekretnina · učešće od 1% · kamata 1,5% prvih 6 god · samo srpski rezidenti',
+    prev_label:'Imam prethodni stambeni kredit',prev_sub:'Isključuje državnu subvenciju za mlade',
+    calc_btn:'Izračunaj',
+    ay_title:'Državna subvencija za mlade aktivna (2026)',ay_body:'Prvih 72 meseca 3,5% (klijent 1,5% + država 2 p.p.). Nakon 6. god: 6M EURIBOR+2%. Maks. kredit 100.000 €, maks. vrednost nekretnine 150.000 €.',info_btn_youth:'Informacije — svi uslovi',
+    arf_title:'Strani državljanin sa boravišnom dozvolom — uslovi kao domaći',arf_body:'Rezidenti-stranci kreditiraju se pod istim uslovima. Dostupne sve banke.',info_btn_resfgn:'Informacije — dokumentacija',
+    ad_title:'Dijaspora — kredit kao kreditni posao sa inostranstvom',ad_body:'Ograničen broj banaka, povišena kamatna stopa, učešće min. 30%.',info_btn_dia:'Informacije — svi uslovi',
+    afn_title:'Strani državljanin bez boravišta — izuzetno ograničene opcije',afn_body:'Strani državljani bez boravišne dozvole. API banka ima poseban program.',info_btn_fgn:'Informacije — uslovi API banke',
+    down_warn_title:'Učešće je ispod minimalnog za odabrani profil',
+    down_warn_youth:'Subvencija za mlade zahteva min. 1% učešća.',
+    down_warn_diaspora:'Dijaspora kredit zahteva min. 30% učešća.',
+    down_warn_fgn:'API banka zahteva min. 40% učešća za strane državljane.',
+    down_info_tpl:'Učešće: {d} € · Kredit: {l} €',
+    results_title:'Poređenje banaka',m_lowest:'Najniža mesečna rata',m_saving:'Ušteda vs najskuplje',m_diff:'Ukupna razlika',
+    col_bank:'Banka',col_rate:'Kamata / EKS',col_monthly:'Mes. rata',col_total:'Ukupna otplata',
+    badge_best:'Najpovoljnija',badge_youth:'Subvencija za mlade',badge_res_fgn:'Strani rezident',badge_diaspora:'Dijaspora OK',badge_only:'Jedina opcija',
+    footer:'Podaci su indikativni, ažurirani mart 2026. NBS ograničenje kamatnih stopa važi do 31.05.2026. Uvek proverite aktuelne uslove direktno sa bankom. · © 2026',
+    footnote_base:'* Kamatne stope su indikativne, ažurirane za mart 2026. Primenjuju se NBS ograničenja: promenljiva max 4,08% NKS, fiksna max 5,03% NKS (važi do 31.05.2026).',
+    fn_youth:' Subvencionisani kredit: 1,5% prvih 6 god, zatim 6M EURIBOR + 2%.',
+    fn_diaspora:' Dijaspora: učešće min. 30%, rok do 20 god.',
+    fn_fgn:' Strani državljani bez boravišta: samo API banka.',
+    link_label:'Sajt',
+    my_title:'Subvencija za mlade — uslovi (2026)',my_s1:'Uslovi za podnosioca',my_s2:'Uslovi kredita',my_s3:'Uslovi za nekretninu',
+    my_note:'* Ovo su zakonski propisani uslovi. Svaka banka može imati dodatne interne zahteve. Uslovi su informativnog karaktera — za konačnu odluku obratite se ekspozituri banke.',
+    my_l1:['Srpsko državljanstvo sa prebivalištem u Republici Srbiji','Starost: od 20 do 35 godina u trenutku podnošenja zahteva','Prva stambena nepokretnost — nije bio/la vlasnik stana niti korisnik stambenog kredita','Nije bio/la korisnik ranijeg subvencionisanog stambenog kredita','Bez neizmirenih obaveza prema bankama u poslednjih 12 meseci','Bez sprovedenih mera bankarskog restrukturiranja dugova'],
+    my_l2:['Maksimalni iznos kredita: 100.000 €','Maksimalna vrednost nekretnine: 150.000 €','Minimalno učešće: 1% vrednosti nekretnine','Rok otplate: do 40 godina, najkasnije do 70. godine života','Grejs period: do 12 meseci','Kamatna stopa prvih 72 meseca: 3,5% (klijent 1,5% + država 2 p.p.)','Nakon 6. godine: varijabilna 6M EURIBOR + 2%','Državna garancija: 40% iznosa kredita u prvih 10 godina'],
+    my_l3:['Nekretnina mora biti uknjižena (ima list nepokretnosti)','Namenjena stanovanju: stan, kuća, deo stambene zgrade ili građevinsko zemljište','Vikendice se ne prihvataju','Nekretnina se ne sme davati u zakup tokom trajanja subvencije (6 god.)'],
+    mrf_title:'Strani rezident — dokumentacija',mrf_s1:'Ko spada u ovu kategoriju',mrf_s2:'Uslovi kredita',mrf_s3:'Standardna dokumentacija',
+    mrf_note:'* Banke imaju pravo da postave dodatne uslove ili zahtevaju dodatnu dokumentaciju. Proverite konkretne uslove direktno u ekspozituri odabrane banke.',
+    mrf_l1:['Strani državljanin sa privremenom boravišnom dozvolom (po bilo kom osnovu)','Strani državljanin sa stalnom nastanjenosti u Srbiji','Prihodi se ostvaruju u Srbiji'],
+    mrf_l2:['Isti uslovi kao za srpske državljane — sve banke dostupne, bez doplate na kamatu','Standardno učešće 20%','Rok otplate do 30–40 godina','Kamatna stopa: ista kao za rezidente'],
+    mrf_l3:['Važeći strani pašoš + boravišna dozvola','Potvrda o zaposlenju i visini zarade od poslodavca u Srbiji','Izvod iz bankovnog računa za poslednjih 3–6 meseci','Izveštaj Kreditnog biroa Srbije','Dokumentacija o nekretnini (list nepokretnosti, ugovor, procena)','Polisa osiguranja nekretnine'],
+    md_title:'Dijaspora — uslovi stambenog kredita',md_s1:'Ko spada u ovu kategoriju',md_s2:'Uslovi kredita',md_s3:'Standardna dokumentacija',
+    md_note:'* Svaka banka procenjuje kreditnu sposobnost individualno. Prevod i overa stranih dokumenata su obavezni. Preporučujemo direktan kontakt sa bankom pre pokretanja procesa.',
+    md_l1:['Srpski državljanin koji živi i radi van Srbije duže od 12 meseci','Prihodi se ostvaruju van Srbije','Kredit se tretira kao kreditni posao sa inostranstvom'],
+    md_l2:['Minimalno učešće: 30% vrednosti nekretnine','Maksimalni rok otplate: do 20 godina','Kamatna stopa: viša za 0,5–1 p.p. u odnosu na standardne uslove','Otplata se vrši sa deviznog računa za nerezidente'],
+    md_l3:['Srpski pašoš (važeći)','Dokaz o boravku u inostranstvu (min. 12 meseci)','Potvrda o zaposlenju i visini zarade iz inostranstva (prevedena i overena)','Izvod sa bankovnog računa u inostranstvu za poslednjih 3–6 meseci','Izveštaj kreditnog biroa iz zemlje boravišta (kod nekih banaka)','Otvoreni devizni račun za nerezidente u banci u Srbiji','Dokumentacija o nekretnini u Srbiji'],
+    mfn_title:'Strani državljanin bez boravišta u Srbiji',mfn_s1:'Opšta situacija',mfn_s2:'Uslovi (API banka — indikativni)',mfn_s3:'Dokumentacija (okvirna lista)',
+    mfn_note:'* Ovo su indikativni uslovi na osnovu dostupnih podataka. API banka može imati ažuriranije uslove. Banke zadržavaju pravo odbijanja zahteva bez obrazloženja.',
+    mfn_l1:['Strani državljani bez boravišne dozvole imaju pravo kupovine nekretnine u Srbiji','U praksi, ogromna većina takvih kupovina se odvija u gotovini, bez bankarskog kredita','API banka jedina ima razvijen program kreditiranja za ovu kategoriju','Američki državljani (SAD) se suočavaju s dodatnim procedurama zbog FATCA obaveza — neke banke odbijaju zahteve US osoba'],
+    mfn_l2:['Minimalno učešće: 40–75% vrednosti nekretnine (zavisi od banke i profila)','Rok otplate: do 15–20 godina (zavisno od procene)','Kamatna stopa: individualna — EKS tipično 5–7%','Procena kreditne sposobnosti na osnovu inostranih primanja'],
+    mfn_l3:['Važeći strani pašoš','Dokaz o prihodima (prevedeno, overeno apostilom)','Izvod sa inostranog bankovnog računa','Kreditni izveštaj iz matične zemlje','Dokumentacija o nekretnini u Srbiji','Poreski broj u Srbiji (PIB za strance)'],
+  },
+  ru: {
+    h_title:'Калькулятор ипотечных кредитов',h_sub:'Сравнение 16 банков · Субсидия для молодёжи · Резиденты и нерезиденты',
+    params_title:'Параметры кредита',prop_value_label:'Стоимость недвижимости',down_label:'Первоначальный взнос (уčеšćе)',
+    loan_amount:'Сумма кредита',repayment_term:'Срок погашения',years_short:'лет',
+    currency_label:'Валюта кредита',cur_eur:'Индексирован в EUR',cur_rsd:'В динарах (RSD)',
+    rate_type_label:'Тип ставки',rate_var:'Переменная',rate_fixed:'Фиксированная',rate_comb:'Комбинированная',
+    profile_title:'Профиль заявителя',residency_label:'Статус проживания',
+    s_res_cit_title:'Резидент — гражданин Сербии',s_res_cit_sub:'Постоянное место жительства в Сербии, сербский паспорт',
+    s_res_for_title:'Резидент — иностранный гражданин (ВНЖ или ПМЖ)',s_res_for_sub:'Вид на жительство · доходы в Сербии · те же условия, что и для местных',
+    s_dia_title:'Нерезидент — диаспора (гражданин Сербии за рубежом)',s_dia_sub:'Живёт и работает за рубежом более 12 месяцев · ограниченное число банков',
+    s_for_title:'Нерезидент — иностранный гражданин без ВНЖ в Сербии',s_for_sub:'Только API banka · доходы за рубежом · особые условия',
+    other_label:'Прочее',
+    youth_label:'Молодёжь 20–35 лет — государственная субсидия',youth_sub:'Первая недвижимость · взнос от 1% · ставка 1,5% первые 6 лет · только резиденты',
+    prev_label:'Имею действующую ипотеку',prev_sub:'Исключает право на государственную субсидию',
+    calc_btn:'Рассчитать',
+    ay_title:'Государственная субсидия для молодёжи (2026)',ay_body:'Первые 72 месяца 3,5% (клиент 1,5% + государство 2 п.п.). После 6-го года: 6M EURIBOR+2%. Макс. кредит 100.000 €.',info_btn_youth:'Подробнее — все условия',
+    arf_title:'Иностранец с ВНЖ/ПМЖ — условия как для местных',arf_body:'Резиденты-иностранцы кредитуются на тех же условиях. Доступны все банки.',info_btn_resfgn:'Подробнее — документация',
+    ad_title:'Диаспора — кредит как валютная операция',ad_body:'Ограниченное число банков, повышенная ставка, взнос мин. 30%.',info_btn_dia:'Подробнее — все условия',
+    afn_title:'Иностранец без ВНЖ — крайне ограниченные опции',afn_body:'Иностранцы без ВНЖ чаще покупают наличными. API banka имеет спецпрограмму.',info_btn_fgn:'Подробнее — условия API banka',
+    down_warn_title:'Взнос ниже минимального для выбранного профиля',
+    down_warn_youth:'Субсидия для молодёжи: мин. 1% взноса.',
+    down_warn_diaspora:'Диаспора: мин. 30% взноса.',
+    down_warn_fgn:'API banka требует мин. 40% взноса.',
+    down_info_tpl:'Взнос: {d} € · Кредит: {l} €',
+    results_title:'Сравнение банков',m_lowest:'Мин. ежемес. платёж',m_saving:'Экономия vs дорогой',m_diff:'Разница за весь срок',
+    col_bank:'Банк',col_rate:'Ставка / ЭПС',col_monthly:'Ежемес. платёж',col_total:'Итого к выплате',
+    badge_best:'Выгоднейший',badge_youth:'Субсидия',badge_res_fgn:'Иностранец с ВНЖ',badge_diaspora:'Диаспора OK',badge_only:'Единственный вариант',
+    footer:'Данные носят информационный характер, обновлены март 2026. Всегда уточняйте актуальные условия непосредственно в банке. · © 2026',
+    footnote_base:'* Процентные ставки ориентировочные, обновлены март 2026. Применяются ограничения НБС: переменная макс. 4,08% NKS, фиксированная макс. 5,03% NKS (действует до 31.05.2026).',
+    fn_youth:' Субсидия: 1,5% первые 6 лет, затем 6M EURIBOR + 2%.',
+    fn_diaspora:' Диаспора: взнос мин. 30%, срок до 20 лет.',
+    fn_fgn:' Иностранцы без ВНЖ: только API banka.',
+    link_label:'Сайт',
+    my_title:'Субсидия для молодёжи — условия (2026)',my_s1:'Требования к заявителю',my_s2:'Условия кредита',my_s3:'Требования к недвижимости',
+    my_note:'* Это законодательно установленные условия. Каждый банк может предъявлять дополнительные требования. Условия носят информационный характер.',
+    my_l1:['Сербское гражданство с постоянной пропиской в Сербии','Возраст: от 20 до 35 лет на момент подачи заявки','Первая жилая недвижимость — ранее не был(а) собственником и не имел(а) ипотеки','Не пользовался ранее субсидированным кредитом','Отсутствие просроченных обязательств перед банками за последние 12 месяцев','Отсутствие мер банковской реструктуризации долгов'],
+    my_l2:['Макс. сумма кредита: 100.000 €','Макс. стоимость недвижимости: 150.000 €','Мин. взнос: 1% стоимости','Срок: до 40 лет, но не позднее 70-летия','Льготный период: до 12 месяцев','Ставка первые 72 мес.: 3,5% (клиент 1,5% + государство 2 п.п.)','После 6-го года: переменная 6M EURIBOR + 2%','Гос. гарантия: 40% суммы на первые 10 лет'],
+    my_l3:['Недвижимость должна быть зарегистрирована','Назначение: жильё (квартира, дом, земельный участок под застройку)','Дачи и садовые домики не принимаются','Нельзя сдавать в аренду в течение срока субсидии (6 лет)'],
+    mrf_title:'Иностранный резидент — документация',mrf_s1:'Кто относится к этой категории',mrf_s2:'Условия кредита',mrf_s3:'Стандартный пакет документов',
+    mrf_note:'* Банки вправе устанавливать дополнительные требования. Уточняйте условия непосредственно в банке.',
+    mrf_l1:['Иностранец с временным видом на жительство (по любому основанию)','Иностранец с постоянным местом жительства в Сербии','Доходы формируются в Сербии'],
+    mrf_l2:['Те же условия, что и для сербских граждан — все банки доступны, без надбавки','Стандартный взнос 20%','Срок погашения до 30–40 лет','Процентная ставка: такая же, как для резидентов'],
+    mrf_l3:['Действующий иностранный паспорт + вид на жительство','Справка с места работы о должности и доходах в Сербии','Выписки по банковскому счёту за 3–6 месяцев','Отчёт Кредитного бюро Сербии','Документация по недвижимости (выписка РГПН, договор, оценка)','Полис страхования недвижимости'],
+    md_title:'Диаспора — условия ипотечного кредита',md_s1:'Кто относится к этой категории',md_s2:'Условия кредита',md_s3:'Стандартный пакет документов',
+    md_note:'* Каждый банк оценивает кредитоспособность индивидуально. Перевод и нотариальное заверение иностранных документов обязательны.',
+    md_l1:['Гражданин Сербии, живущий и работающий за рубежом более 12 мес.','Доходы формируются за пределами Сербии','Кредит квалифицируется как валютная операция с иностранством'],
+    md_l2:['Мин. взнос: 30%','Макс. срок: до 20 лет','Ставка: выше стандартной на 0,5–1 п.п.','Погашение с валютного счёта нерезидента'],
+    md_l3:['Действующий сербский паспорт','Подтверждение проживания за рубежом (мин. 12 мес.)','Справка о доходах от иностранного работодателя (переведена, заверена)','Выписки с зарубежного счёта за 3–6 мес.','Кредитный отчёт из страны проживания (в ряде банков)','Валютный счёт нерезидента в банке Сербии','Документация по недвижимости в Сербии'],
+    mfn_title:'Иностранец без ВНЖ в Сербии',mfn_s1:'Общая ситуация',mfn_s2:'Условия (API banka — ориентировочные)',mfn_s3:'Документация (ориентировочный список)',
+    mfn_note:'* Условия ориентировочные. API banka может иметь актуализированные условия. Банки оставляют за собой право отказа.',
+    mfn_l1:['Иностранные граждане без ВНЖ вправе покупать недвижимость в Сербии','На практике подавляющее большинство таких сделок совершается за наличные','API banka — единственный банк с программой кредитования для этой категории','Граждане США сталкиваются с дополнительными проверками из-за FATCA — часть банков отказывает американцам'],
+    mfn_l2:['Мин. взнос: 40–75% (зависит от банка и профиля)','Срок: до 15–20 лет (по результатам оценки)','Ставка: индивидуальная, EPS типично 5–7%','Оценка платежеспособности на основе зарубежных доходов'],
+    mfn_l3:['Действующий иностранный паспорт','Подтверждение доходов (переведено, апостиль)','Выписка с иностранного счёта','Кредитный отчёт из страны происхождения','Документация по недвижимости в Сербии','Налоговый номер в Сербии (PIB)'],
+  }
+};
+
+let LANG = 'sr';
+const S = {propValue:100000, downPct:20, term:20, currency:'EUR', rateType:'variable', status:'resident_citizen', youth:false, prev:false};
+
+const BANKS = [
+  // rateVar = bank margin only (+ 3M/6M EURIBOR ~2.0-2.1% on top in reality, but NBS cap applies)
+  // eks = approximate EKS including notary, insurance, valuation costs
+  {name:'Poštanska štedionica',  rateVar:3.5, rateFixed:4.2, rateComb:3.9, eks:4.2, rsdAdd:1.4, url:'https://www.posted.co.rs',            youthOk:true,  minDown:20, cats:['resident_citizen','resident_foreigner','diaspora']},
+  {name:'Banca Intesa',          rateVar:3.7, rateFixed:4.0, rateComb:3.9, eks:4.7, rsdAdd:1.8, url:'https://www.bancaintesa.rs',           youthOk:true,  minDown:20, cats:['resident_citizen','resident_foreigner','diaspora']},
+  {name:'NLB Komercijalna banka',rateVar:3.8, rateFixed:4.3, rateComb:4.0, eks:4.3, rsdAdd:1.5, url:'https://www.nlbkb.rs',                 youthOk:true,  minDown:20, cats:['resident_citizen','resident_foreigner','diaspora']},
+  {name:'Raiffeisen banka',      rateVar:3.9, rateFixed:4.3, rateComb:4.0, eks:4.4, rsdAdd:1.5, url:'https://www.raiffeisenbank.rs',        youthOk:true,  minDown:20, cats:['resident_citizen','resident_foreigner','diaspora']},
+  {name:'OTP banka',             rateVar:3.9, rateFixed:4.3, rateComb:4.1, eks:4.5, rsdAdd:1.6, url:'https://www.otpbanka.rs',              youthOk:true,  minDown:20, cats:['resident_citizen','resident_foreigner','diaspora']},
+  {name:'Société Générale',      rateVar:4.0, rateFixed:4.5, rateComb:4.1, eks:4.5, rsdAdd:1.8, url:'https://www.societegenerale.rs',       youthOk:false, minDown:20, cats:['resident_citizen','resident_foreigner','diaspora']},
+  {name:'UniCredit bank',        rateVar:4.0, rateFixed:4.5, rateComb:4.2, eks:4.6, rsdAdd:1.7, url:'https://www.unicreditbank.rs',         youthOk:false, minDown:20, cats:['resident_citizen','resident_foreigner','diaspora']},
+  {name:'Direktna banka',        rateVar:4.0, rateFixed:4.6, rateComb:4.2, eks:4.5, rsdAdd:1.9, url:'https://www.direktnabanka.rs',         youthOk:false, minDown:20, cats:['resident_citizen','resident_foreigner']},
+  {name:'Erste banka',           rateVar:4.0, rateFixed:4.7, rateComb:4.3, eks:4.6, rsdAdd:1.9, url:'https://www.erstebank.rs',             youthOk:false, minDown:20, cats:['resident_citizen','resident_foreigner']},
+  {name:'API banka',             rateVar:4.2, rateFixed:4.9, rateComb:4.4, eks:4.8, rsdAdd:2.0, url:'https://www.apibank.rs',               youthOk:false, minDown:20, cats:['resident_citizen','resident_foreigner','diaspora','foreigner_nonres']},
+  {name:'AIK banka',             rateVar:4.0, rateFixed:4.7, rateComb:4.3, eks:4.5, rsdAdd:2.0, url:'https://www.aikbanka.rs',              youthOk:false, minDown:10, cats:['resident_citizen','resident_foreigner']},
+  {name:'Addiko bank',           rateVar:4.1, rateFixed:4.8, rateComb:4.3, eks:4.6, rsdAdd:1.8, url:'https://www.addiko.rs',                youthOk:false, minDown:20, cats:['resident_citizen','resident_foreigner']},
+  {name:'Halkbank',              rateVar:4.2, rateFixed:4.9, rateComb:4.4, eks:4.7, rsdAdd:2.1, url:'https://www.halkbank.rs',              youthOk:false, minDown:20, cats:['resident_citizen','resident_foreigner','diaspora']},
+  {name:'Procredit banka',       rateVar:4.0, rateFixed:4.5, rateComb:4.0, eks:4.5, rsdAdd:2.2, url:'https://www.procreditbank.rs',         youthOk:false, minDown:20, cats:['resident_citizen','resident_foreigner']},
+  {name:'Adriatic banka',        rateVar:4.3, rateFixed:5.0, rateComb:4.5, eks:4.9, rsdAdd:2.3, url:'https://expobank.rs',                  youthOk:false, minDown:20, cats:['resident_citizen','resident_foreigner','diaspora']},
+  {name:'Alta banka',            rateVar:4.1, rateFixed:4.8, rateComb:4.3, eks:4.6, rsdAdd:1.9, url:'https://altabanka.com',                youthOk:false, minDown:20, cats:['resident_citizen','resident_foreigner']},
+];
+
+function annuity(P,r,n){const m=r/100/12;if(m===0)return P/n;return P*m*Math.pow(1+m,n)/(Math.pow(1+m,n)-1)}
+function fmt(n){return new Intl.NumberFormat('sr-RS',{maximumFractionDigits:0}).format(Math.round(n))}
+function fmtPct(p){return p.toFixed(2)+'%'}
+
+function getLoanAmount(){return Math.round(S.propValue*(1-S.downPct/100))}
+function getDownAmount(){return Math.round(S.propValue*S.downPct/100)}
+
+function getRate(b){
+  if(S.youth&&b.youthOk)return 1.5;
+  let base=S.rateType==='fixed'?b.rateFixed:S.rateType==='combined'?b.rateComb:b.rateVar;
+  if(S.currency==='RSD')base+=b.rsdAdd;
+  if(S.status==='diaspora'||S.status==='foreigner_nonres')base+=0.8;
+  // NBS caps (valid through 31.05.2026, extended per current decision)
+  if(S.rateType==='fixed'){base=Math.min(base,5.03);}
+  else if(S.rateType==='variable'){base=Math.min(base,4.08);}
+  // combined: cap at 4.50 as reasonable midpoint
+  else{base=Math.min(base,4.50);}
+  return base;
+}
+
+function updateDownInfo(){
+  const t=T[LANG];
+  const d=getDownAmount(),l=getLoanAmount();
+  const tpl=t.down_info_tpl||'Down: {d} € · Loan: {l} €';
+  document.getElementById('down-info').textContent=tpl.replace('{d}',fmt(d)).replace('{l}',fmt(l));
+}
+
+function checkDownWarn(){
+  const t=T[LANG];
+  let warn='';
+  if(S.youth&&S.downPct<1)warn=t.down_warn_youth||'Min 1% required';
+  else if(S.status==='diaspora'&&S.downPct<30)warn=t.down_warn_diaspora||'Min 30% required';
+  else if(S.status==='foreigner_nonres'&&S.downPct<40)warn=t.down_warn_fgn||'Min 40% required';
+  const box=document.getElementById('alert-down-warn');
+  const txt=document.getElementById('down-warn-text');
+  if(warn){box.style.display='block';txt.textContent=warn;}
+  else{box.style.display='none';}
+}
+
+function render(){
+  const t=T[LANG];
+  const loanAmt=getLoanAmount();
+  const months=S.term*12;
+  checkDownWarn();
+  const eligible=BANKS.filter(b=>{
+    if(!b.cats.includes(S.status))return false;
+    if(S.youth&&!b.youthOk)return false;
+    return true;
+  }).map(b=>{
+    const rate=getRate(b);
+    const monthly=annuity(loanAmt,rate,months);
+    const total=monthly*months;
+    return{...b,rate,monthly,total};
+  }).sort((a,b)=>a.monthly-b.monthly);
+
+  const list=document.getElementById('banks-list');
+  list.innerHTML='';
+  if(!eligible.length){
+    list.innerHTML='<div class="empty-state">—</div>';
+    ['best-m','saving-m','total-diff'].forEach(id=>document.getElementById(id).textContent='—');
+    return;
+  }
+
+  const best=eligible[0].monthly,worst=eligible[eligible.length-1].monthly;
+  document.getElementById('best-m').textContent=fmt(best)+' €';
+  document.getElementById('saving-m').textContent='+'+fmt(worst-best)+' €/mes';
+  document.getElementById('total-diff').textContent=fmt((worst-best)*months)+' €';
+
+  eligible.forEach((b,i)=>{
+    const isYouth=S.youth&&b.youthOk;
+    const div=document.createElement('div');
+    div.className='bank-row'+(i===0?' best':'')+(isYouth?' youth-ok':'');
+    let badge2='';
+    if(S.status==='resident_foreigner')badge2='<span class="badge badge-amber">'+t.badge_res_fgn+'</span>';
+    else if(S.status==='diaspora')badge2='<span class="badge badge-amber">'+t.badge_diaspora+'</span>';
+    else if(S.status==='foreigner_nonres'&&b.name==='API banka')badge2='<span class="badge badge-amber">'+t.badge_only+'</span>';
+    const minDownBadge=(b.minDown&&b.minDown<20)?'<span class="badge badge-green">min učešće '+b.minDown+'%</span>':'';
+    div.innerHTML=`<div>
+      <div class="bank-name">${b.name}</div>
+      <div class="bank-badges">
+        ${i===0?'<span class="badge badge-blue">'+t.badge_best+'</span>':''}
+        ${isYouth?'<span class="badge badge-green">'+t.badge_youth+'</span>':''}
+        ${minDownBadge}
+        ${badge2}
+      </div></div>
+      <div class="bank-rate ${b.rate<4?'low':''}">${fmtPct(b.rate)}<span class="eks">EKS ~${fmtPct(b.eks)}</span></div>
+      <div class="bank-monthly">${fmt(b.monthly)} €</div>
+      <div class="bank-total">${fmt(b.total)} €<span class="interest">Kamata: ${fmt(b.total-loanAmt)} €</span></div>
+      <div class="bank-link"><a href="${b.url}" target="_blank">${t.link_label} ↗</a></div>`;
+    list.appendChild(div);
+  });
+
+  let note=t.footnote_base;
+  if(S.youth)note+=t.fn_youth;
+  if(S.status==='diaspora')note+=t.fn_diaspora;
+  if(S.status==='foreigner_nonres')note+=t.fn_fgn;
+  document.getElementById('footnote').textContent=note;
+
+  document.getElementById('alert-youth').style.display=S.youth?'block':'none';
+  document.getElementById('alert-res-foreigner').style.display=S.status==='resident_foreigner'?'block':'none';
+  document.getElementById('alert-diaspora').style.display=S.status==='diaspora'?'block':'none';
+  document.getElementById('alert-foreigner-nonres').style.display=S.status==='foreigner_nonres'?'block':'none';
+  const yr=document.getElementById('row-youth');
+  if(yr)yr.style.opacity=S.status==='resident_citizen'?'1':'0.4';
+}
+
+function tog(el,key){
+  el.classList.toggle('on');
+  const on=el.classList.contains('on');
+  if(key==='youth'){S.youth=on;if(on){S.prev=false;document.getElementById('tog-prev').classList.remove('on');}}
+  else if(key==='prev'){S.prev=on;if(on){S.youth=false;document.getElementById('tog-youth').classList.remove('on');}}
+}
+
+function setLang(lang){
+  LANG=lang;
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.textContent===lang.toUpperCase()));
+  const t=T[lang];
+  document.getElementById('h-title').textContent=t.h_title;
+  document.getElementById('h-sub').textContent=t.h_sub;
+  document.getElementById('footer-text').textContent=t.footer;
+  document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.dataset.i18n;if(t[k]!==undefined)el.textContent=t[k];});
+  ['my','mrf','md','mfn'].forEach(p=>{
+    [1,2,3].forEach(n=>{
+      const el=document.getElementById(p+'-list-'+n);
+      if(el){const key=p+'_l'+n;if(t[key]){el.innerHTML=t[key].map(i=>'<li>'+i+'</li>').join('');}}
+    });
+  });
+  updateDownInfo();
+  render();
+}
+
+document.getElementById('prop-value').addEventListener('input',function(){
+  S.propValue=parseInt(this.value);
+  document.getElementById('prop-value-out').textContent=fmt(S.propValue)+' €';
+  updateDownInfo();
+});
+
+function setDownPct(pct){
+  S.downPct=pct;
+  // sync slider
+  document.getElementById('down-range').value=pct;
+  document.getElementById('down-pct-out').textContent=pct+'%';
+  // sync tab highlight (only exact matches)
+  document.querySelectorAll('#down-tabs .tab').forEach(x=>{
+    x.classList.toggle('active',parseInt(x.dataset.val)===pct);
+  });
+  updateDownInfo();
+}
+
+document.getElementById('down-range').addEventListener('input',function(){
+  setDownPct(parseInt(this.value));
+});
+document.querySelectorAll('#down-tabs .tab').forEach(t=>t.addEventListener('click',function(){
+  setDownPct(parseInt(this.dataset.val));
+}));
+document.querySelectorAll('#term-tabs .tab').forEach(t=>t.addEventListener('click',function(){
+  document.querySelectorAll('#term-tabs .tab').forEach(x=>x.classList.remove('active'));
+  this.classList.add('active');S.term=parseInt(this.dataset.val);
+}));
+document.querySelectorAll('#currency-tabs .tab').forEach(t=>t.addEventListener('click',function(){
+  document.querySelectorAll('#currency-tabs .tab').forEach(x=>x.classList.remove('active'));
+  this.classList.add('active');S.currency=this.dataset.val;
+}));
+document.querySelectorAll('#rate-tabs .tab').forEach(t=>t.addEventListener('click',function(){
+  document.querySelectorAll('#rate-tabs .tab').forEach(x=>x.classList.remove('active'));
+  this.classList.add('active');S.rateType=this.dataset.val;
+}));
+document.querySelectorAll('input[name="status"]').forEach(r=>r.addEventListener('change',function(){
+  S.status=this.value;
+  if(S.status!=='resident_citizen'){S.youth=false;document.getElementById('tog-youth').classList.remove('on');}
+}));
+
+document.getElementById('calc-btn').addEventListener('mouseenter',function(){this.style.background='#2A5CB8'});
+document.getElementById('calc-btn').addEventListener('mouseleave',function(){this.style.background='var(--blue)'});
+
+function openModal(id){document.getElementById(id).classList.add('open');document.body.style.overflow='hidden'}
+function closeModal(id){document.getElementById(id).classList.remove('open');document.body.style.overflow=''}
+document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',function(e){if(e.target===this)closeModal(this.id)}));
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.modal-overlay.open').forEach(m=>closeModal(m.id))});
+
+setLang('sr');
+</script>
+</body>
+</html>
